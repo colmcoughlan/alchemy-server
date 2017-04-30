@@ -10,7 +10,7 @@ from flask import Flask, jsonify
 from parse_likecharity import refresh_charities
 import threading
 
-refresh_rate = 12000 #Seconds
+refresh_rate = 24 * 60 * 60 #Seconds
 
 # variables that are accessible from anywhere
 payload = {}

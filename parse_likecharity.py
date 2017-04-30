@@ -47,7 +47,7 @@ def repair_charities(charity_dict, cx, api_key):
       repair_list.append(charity)
   
   if len(repair_list) > 0:
-    print('Reparing '+str(len(repair_list))+' charities')
+    print('Repairing '+str(len(repair_list))+' charities')
     for charity in repair_list:
       charity_dict[charity]['logo'] = update_logo_from_google(charity, cx, api_key)
   
