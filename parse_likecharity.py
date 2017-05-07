@@ -27,14 +27,13 @@ def get_google_api_key(config_file = '/home/colm/alchemy-keys/google-api-keys.in
 def update_logo_from_google(charity, cx, key):
 
   #print('Fetching logo for '+charity)
-  return ''
   r = requests.get('https://www.googleapis.com/customsearch/v1?q='+charity+' charity logo&searchType=image&cx='+cx+'&key='+key+'M&num=1')
   try:
     link = r.json()['items'][0]['link']
   except KeyError:
     link = ''
     
-    time.sleep(1) # don't overload API with requests. Need to also bear in mind retriction of 100 reqs a day
+    time.sleep(1) # don't overload API with requests. Need to also bear in mind restriction of 100 reqs a day
   
   return link
 
@@ -106,6 +105,7 @@ def refresh_charities():
       payload['donation_list'] = {}
       payload['category'] = category
       payload['logo'] = ''
+      payload['number'] = '50300'
       for entry in charity_key_value.findAll(text=True):
         key = entry.split(' - ')
         if len(key) != 2:
