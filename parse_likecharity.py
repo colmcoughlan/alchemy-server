@@ -126,7 +126,6 @@ def refresh_charities():
     
   charity_dict = repair_charities(charity_dict, cx, api_key)
     
-  print(charity_dict)
   with open('charity_info.json', 'w') as f:
     json.dump(charity_dict, f)
   
@@ -134,5 +133,4 @@ def refresh_charities():
 
 if __name__ == "__main__":
   categories, charity_dict = refresh_charities()
-  print(charity_dict)
 
