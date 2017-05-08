@@ -66,8 +66,10 @@ def refresh_charities():
   try:
     with open('charity_info.json', 'r') as f:
       old_list = json.load(f)
+      print(str(len(old_list)) + 'charities loaded from stored json.')
   except FileNotFoundError:
     old_list = {}
+    print('No stored json found, will start from scratch.')
     
   cx, api_key = get_google_api_key()
 
@@ -120,7 +122,7 @@ def refresh_charities():
   new_charities = set(charity_dict.keys()) - set(old_list.keys())
   
   if len(new_charities) > 0:
-    print('New charities detected. Pulling logos from google images.')
+    print(str(len(new_charities))+' new charities detected. Pulling logos from google images.')
     for charity in new_charities:
       charity_dict[charity]['logo'] = update_logo_from_google(charity, cx, api_key)
     
