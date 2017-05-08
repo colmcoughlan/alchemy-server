@@ -23,6 +23,8 @@ backgroundThread = threading.Thread()
 app = Flask(__name__)
 
 def update_charities():
+  print('Updating charities in background thread')
+  
   global payload
   global backgroundThread
   with dataLock:
