@@ -42,8 +42,6 @@ def repair_charities(charity_dict, cx, api_key):
   repair_list = []
   
   for charity, info in charity_dict.items():
-    print(info)
-    time.sleep(3)
     if info['logo'] == '':
       repair_list.append(charity)
   
@@ -105,10 +103,14 @@ def refresh_charities():
     # get the info for the charities
   
     for charity, charity_key_value in zip(charities, charities_key_value):
+      charity_name = ''.join(charity.findAll(text=True))
       payload = {}
       payload['donation_list'] = {}
       payload['category'] = category
-      payload['logo'] = ''
+      if  charity_name in old_list.keys():
+        payload['logo'] = old_list[charity_name]['logo']
+      else:
+        payload['logo'] = ''
       payload['number'] = '50300'
       for entry in charity_key_value.findAll(text=True):
         key = entry.split(' - ')
@@ -117,7 +119,6 @@ def refresh_charities():
           raise(Exception)
         payload['donation_list'][key[0]] = key[1]
       
-      charity_name = ''.join(charity.findAll(text=True))
       charity_dict[charity_name] =  payload
     
     
