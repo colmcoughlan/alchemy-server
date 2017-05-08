@@ -64,7 +64,7 @@ def repair_charities(charity_dict, cx, api_key):
 def refresh_charities():
   
   try:
-    with open('charity_info.pickle', 'r') as f:
+    with open('charity_info.json', 'r') as f:
       old_list = json.load(f)
   except FileNotFoundError:
     old_list = {}
