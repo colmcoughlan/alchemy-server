@@ -42,6 +42,8 @@ def repair_charities(charity_dict, cx, api_key):
   repair_list = []
   
   for charity, info in charity_dict.items():
+    print(info)
+    time.sleep(3)
     if info['logo'] == '':
       repair_list.append(charity)
   
