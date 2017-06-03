@@ -14,6 +14,7 @@ from configparser import ConfigParser
 from logo_check import check_for_faces, ImageException
 import cv2
 
+
 def get_google_api_key(config_file = '../etc/alchemy-keys/google-api-keys.ini'):
     parser = ConfigParser()
     retval = parser.read(config_file)
@@ -42,17 +43,18 @@ def update_logo_from_google(charity, cx, key, faceCascade):
                 link = ''
         except ImageException:
             print('Error checking '+charity+' for faces')
+            have_face = False
         
     time.sleep(1) # don't overload API with requests. Need to also bear in mind restriction of 100 reqs a day
     
-    return link
+    return link, have_face
 
 def addMissingLogoURLs(charity_dict, cx, api_key, faceCascade):
     
     repair_list = []
     
     for charity, info in charity_dict.items():
-        if info['logo'] == '':
+        if info['logo'] == '' and not(info['hasFace']):
             repair_list.append(charity)
     
     if len(repair_list) > 0:
@@ -122,8 +124,10 @@ def refresh_charities():
             payload['category'] = category
             if    charity_name in old_list.keys():
                 payload['logo'] = old_list[charity_name]['logo']
+                payload['hasFace'] = old_list[charity_name]['hasFace']
             else:
                 payload['logo'] = ''
+                payload['hasFace'] = False
             payload['number'] = '50300'
             for entry in charity_key_value.findAll(text=True):
                 key = entry.split(' - ')
@@ -140,7 +144,7 @@ def refresh_charities():
     if len(new_charities) > 0:
         print(str(len(new_charities))+' new charities detected. Pulling logos from google images.')
         for charity in new_charities:
-            charity_dict[charity]['logo'] = update_logo_from_google(charity, cx, api_key, faceCascade)
+            charity_dict[charity]['logo'], charity_dict[charity]['hasFace'] = update_logo_from_google(charity, cx, api_key, faceCascade)
         
     charity_dict = addMissingLogoURLs(charity_dict, cx, api_key)
         
