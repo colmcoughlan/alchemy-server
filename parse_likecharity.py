@@ -149,7 +149,7 @@ def refresh_charities():
         
     charity_dict = addMissingLogoURLs(charity_dict, cx, api_key, faceCascade)
         
-    with open('charity_info.json', 'w') as f:
+    with open('../etc/charity_info.json', 'w') as f:
         json.dump(charity_dict, f)
     
     return categories, charity_dict
