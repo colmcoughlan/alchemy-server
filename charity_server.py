@@ -40,6 +40,7 @@ def update_charities():
 
 @app.route("/gci")
 def gci():
+  global payload
   delta = datetime.now() - start_time
   if delta.total_seconds() > refresh_rate:
       categories, charity_dict = refresh_charities()
