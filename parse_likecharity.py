@@ -61,7 +61,7 @@ def addMissingLogoURLs(charity_dict, cx, api_key, faceCascade):
     if len(repair_list) > 0:
         print('Repairing '+str(len(repair_list))+' charities')
         for charity in repair_list:
-            charity_dict[charity]['logo'] = update_logo_from_google(charity, cx, api_key, faceCascade)
+            charity_dict[charity]['logo'], charity_dict[charity]['hasFace'] = update_logo_from_google(charity, cx, api_key, faceCascade)
     
     return charity_dict
     

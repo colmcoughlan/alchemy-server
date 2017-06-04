@@ -22,9 +22,11 @@ payload = {}
 @app.route("/gci")
 def gci():
   global payload
+  global initialized
   delta = datetime.now() - start_time
   if delta.total_seconds() > refresh_rate or not(initialized):
       categories, charity_dict = refresh_charities()
+      initialized = True
       payload = {'categories':categories, 'charities':charity_dict}
   return jsonify(payload)
 

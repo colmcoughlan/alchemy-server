@@ -45,7 +45,8 @@ def check_for_faces(charity, logo, faceCascade):
         if len(faces) > 0:
             shutil.move(path, '../etc/images/faces/'+charity+'.'+suffix)
             return True
-    return False
+        else:
+            return False
 
 if __name__ == "__main__":
     
