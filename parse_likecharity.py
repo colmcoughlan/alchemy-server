@@ -147,7 +147,7 @@ def refresh_charities():
         for charity in new_charities:
             charity_dict[charity]['logo'], charity_dict[charity]['hasFace'] = update_logo_from_google(charity, cx, api_key, faceCascade)
         
-    charity_dict = addMissingLogoURLs(charity_dict, cx, api_key)
+    charity_dict = addMissingLogoURLs(charity_dict, cx, api_key, faceCascade)
         
     with open('charity_info.json', 'w') as f:
         json.dump(charity_dict, f)
