@@ -36,6 +36,8 @@ def update_logo_from_google(charity, cx, key, faceCascade):
     except KeyError:
         link = ''
         
+    have_face = False
+        
     if link != '':
         try:
             have_face = check_for_faces(charity, link, faceCascade)
@@ -43,7 +45,6 @@ def update_logo_from_google(charity, cx, key, faceCascade):
                 link = ''
         except ImageException:
             print('Error checking '+charity+' for faces')
-            have_face = False
         
     time.sleep(1) # don't overload API with requests. Need to also bear in mind restriction of 100 reqs a day
     
