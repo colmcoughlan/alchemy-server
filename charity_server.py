@@ -11,6 +11,8 @@ from parse_likecharity import refresh_charities
 import threading
 from datetime import datetime
 
+app = Flask(__name__)
+
 refresh_rate = 24 * 60 * 60 #Seconds
 start_time = datetime.now()
 
@@ -20,9 +22,6 @@ payload = {}
 dataLock = threading.Lock()
 # thread handler
 backgroundThread = threading.Thread()
-
-
-app = Flask(__name__)
 
 def update_charities():
   print('Updating charities in background thread')
