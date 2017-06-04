@@ -76,7 +76,7 @@ def addMissingLogoURLs(charity_dict, cx, api_key, faceCascade):
 def refresh_charities():
     
     try:
-        with open('charity_info.json', 'r') as f:
+        with open('../etc/charity_info.json', 'r') as f:
             old_list = json.load(f)
             print(str(len(old_list)) + 'charities loaded from stored json.')
     except FileNotFoundError:
