@@ -79,7 +79,7 @@ def refresh_charities():
     try:
         with open('../etc/charity_info.json', 'r') as f:
             old_list = json.load(f)
-            print(str(len(old_list)) + 'charities loaded from stored json.')
+            print(str(len(old_list)) + ' charities loaded from stored json.')
     except FileNotFoundError:
         old_list = {}
         print('No stored json found, will start from scratch.')
