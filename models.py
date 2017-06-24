@@ -39,7 +39,7 @@ class Logo(BaseModel, db.Model):
     __tablename__ = 'logos'
 
     charity_id = db.Column(db.Integer, primary_key = True)
-    has_face = db.Column(db.Bool)
+    has_face = db.Column(db.Boolean)
     logo_url = db.Column(db.String)
 
     
