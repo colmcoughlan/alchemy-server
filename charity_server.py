@@ -9,12 +9,14 @@ Created on Sun Apr 30 01:14:12 2017
 from flask import Flask, jsonify
 from parse_likecharity import refresh_charities
 from datetime import datetime
+import os
 
 app = Flask(__name__)
 
 refresh_rate = 24 * 60 * 60 #Seconds
 start_time = datetime.now()
 initialized = False
+app.config['SQLALCHEMY_DATABASE_URI'] = os.env['SQLALCHEMY_DATABASE_URI']
 
 # variables that are accessible from anywhere
 payload = {}
