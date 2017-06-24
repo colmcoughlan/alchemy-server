@@ -7,7 +7,7 @@ Created on Sat Jun 24 22:34:42 2017
 
 from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
-from app import app
+from charity_server import app
 from models import db
 
 
