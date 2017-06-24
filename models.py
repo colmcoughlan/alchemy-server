@@ -5,7 +5,7 @@ Created on Sat Jun 24 22:34:18 2017
 @author: colmc
 """
 
-from flask.ext.sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy
 import datetime
 
 db = SQLAlchemy()
