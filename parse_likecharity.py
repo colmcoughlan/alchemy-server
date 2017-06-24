@@ -6,7 +6,7 @@ Created on Sat Apr 22 23:20:13 2017
 @author: colm
 """
 
-from bs4 import BeautifulSoup
+import BeautifulSoup
 import requests
 import time
 import json
