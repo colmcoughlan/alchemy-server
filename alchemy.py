@@ -64,21 +64,24 @@ def update_charities(conn):
             payloads.append(payload)
             
     charities = pd.DataFrame(payloads)
-    query = 'SELECT * FROM CHARITY'
-    saved_charities = pd.read_sql_query(query, conn)
     
-    #metadata = MetaData(conn)
-    #charity = Table('charity', metadata, autoload=True)
+    metadata = MetaData(conn)
+    charity = Table('charity', metadata, autoload=True)
+    charity.delete()
     
     # add new ones, replacing old ones
-    #charities = charities[-charities['name'].isin(saved_charities['name'])]
     charities['load_time'] = datetime.utcnow()
     charities.to_sql(name='charity', con=conn, if_exists = 'append', index=False)
+    
+    return 0
         
 if __name__ == "__main__":
     
-    conn = create_engine(os.environ['SQLALCHEMY_DATABASE_URI']).connect()
+    db = create_engine(os.environ['SQLALCHEMY_DATABASE_URI'])
+    conn = db.connect()
     
-    categories, charity_dict = update_charities(conn)
+    update_charities(conn)
+    
     conn.close()
+    db.dispose()
             
