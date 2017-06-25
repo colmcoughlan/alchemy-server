@@ -9,7 +9,7 @@ import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
 import pandas as pd
-from sqlachemy import Table, MetaData, bindparam, create_engine, connect
+from flask_sqlalchemy import SQLAlchemy
 import os
 
 source_url = 'https://api.likecharity.com/charities/'
@@ -64,13 +64,13 @@ def update_charities(conn):
     query = 'SELECT * FROM CHARITY'
     saved_charities = pd.read_sql_query(query, conn)
     
-    metadata = MetaData(conn)
-    charity = Table('charity', metadata, autoload=True)
+    metadata = SQLAlchemy.MetaData(conn)
+    charity = SQLAlchemy.Table('charity', metadata, autoload=True)
     
     # update existing tables
     query = charity.update().\
-                          where(charity.c.name == bindparam('name')).\
-                          values(donation_list=bindparam('donation_list'), category=bindparam('category'))
+                          where(charity.c.name == SQLAlchemy.bindparam('name')).\
+                          values(donation_list=SQLAlchemy.bindparam('donation_list'), category=SQLAlchemy.bindparam('category'))
     conn.execute(query, [saved_charities['name', 'donation_list', 'category'].to_dict()])
     
     # add new ones
@@ -80,7 +80,7 @@ def update_charities(conn):
         
 if __name__ == "__main__":
     
-    conn = create_engine(os.environ['SQLALCHEMY_DATABASE_URI']).connect()
+    conn = SQLAlchemy.create_engine(os.environ['SQLALCHEMY_DATABASE_URI']).connect()
     
     categories, charity_dict = update_charities(conn)
     conn.close()
