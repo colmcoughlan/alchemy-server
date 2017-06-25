@@ -37,16 +37,19 @@ def requests_image(charity, file_url, root = '../etc/images/'):
         raise(ImageException('Error downloading file'))
         
 def check_for_faces(charity, logo, faceCascade):
-    path, suffix = requests_image(charity,logo)
-    if suffix not in ['gif','svg']:
-        image = cv2.imread(path)
-        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) # switch to black and white
-        faces = faceCascade.detectMultiScale(gray,scaleFactor=1.3,minNeighbors=5,minSize=(30, 30)) # search for faces
-        if len(faces) > 0:
-            shutil.move(path, '../etc/images/faces/'+charity+'.'+suffix)
-            return True
-        else:
-            return False
+    try:
+        path, suffix = requests_image(charity,logo)
+        if suffix not in ['gif','svg']:
+            image = cv2.imread(path)
+            gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) # switch to black and white
+            faces = faceCascade.detectMultiScale(gray,scaleFactor=1.3,minNeighbors=5,minSize=(30, 30)) # search for faces
+            if len(faces) > 0:
+                shutil.move(path, '../etc/images/faces/'+charity+'.'+suffix)
+                return True
+            else:
+                return False
+    except Exception:
+        return True # exceptions assumed to have face
 
 if __name__ == "__main__":
     
