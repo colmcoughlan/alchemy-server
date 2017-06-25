@@ -81,7 +81,7 @@ def update_charities(conn):
             
     charities = pd.DataFrame(payloads)
     
-    stmt = Charity.delete()
+    stmt = Charity.query.delete()
     stmt.execute()
     
     # add new ones, replacing old ones
