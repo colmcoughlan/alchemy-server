@@ -10,6 +10,7 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 import pandas as pd
 from sqlalchemy import Table, MetaData, create_engine
+from sqlalchemy.orm import sessionmaker
 from configparser import ConfigParser
 import json
 import os
@@ -81,14 +82,12 @@ def update_charities(conn):
             
     charities = pd.DataFrame(payloads)
     
-    metadata = MetaData(conn)
-    charity = Table('charity', metadata, autoload=True)
-    stmt = charity.delete()
-    stmt.execute()
+    session.query(Charity).delete()
+    session.commit()
     
     # add new ones, replacing old ones
     charities['load_time'] = datetime.utcnow()
-    charities.to_sql(name='charity', con=conn, if_exists = 'append', index=False)
+    charities.to_sql(name='charity', con=session.bind, if_exists = 'append', index=False)
     
     return 0
 
@@ -96,7 +95,7 @@ def get_descriptions(conn):
     
     metadata = MetaData(conn)
     charity = Table('charity', metadata, autoload=True)
-    charities = Table.query(Charity.name)\
+    charities = charity.query(Charity.name)\
     .outerjoin(Description, Charity.name == Description.name)
     
     cx, key = get_google_api_key()
@@ -120,11 +119,12 @@ def get_descriptions(conn):
 if __name__ == "__main__":
     
     db = create_engine(os.environ['SQLALCHEMY_DATABASE_URI'])
-    conn = db.connect()
+    Session = sessionmaker(bind=db)
+    session = Session()
     
-    update_charities(conn)
-    get_descriptions(conn)
+    update_charities(session)
+    get_descriptions(session)
     
-    conn.close()
+    session.close()
     db.dispose()
             
