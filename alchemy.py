@@ -97,7 +97,12 @@ def update_charities(session):
 def get_descriptions(session):
     
     charities = session.query(Charity.name)\
-    .outerjoin(Description, Charity.name == Description.name)
+    .outerjoin(Description, Charity.name == Description.name)\
+    .filter(Description.name == None) # left outer join
+    
+    for charity in charities:
+        print(charity)
+    return 0
     
     cx, key = get_google_api_key()
 
@@ -120,7 +125,8 @@ def get_descriptions(session):
 def get_logos(session, faceCascade):
     
     charities = session.query(Charity.name)\
-    .outerjoin(Logo, Charity.name == Logo.name)
+    .outerjoin(Logo, Charity.name == Logo.name)\
+    .filter(Logo.name == None) # left outer join
     
     cx, key = get_google_api_key()
 
@@ -153,7 +159,7 @@ if __name__ == "__main__":
     
     update_charities(session)
     get_descriptions(session)
-    get_logos(session, faceCascade)
+    #get_logos(session, faceCascade)
     
     session.close()
     db.dispose()
