@@ -6,7 +6,7 @@ Created on Sat Jun 24 22:34:18 2017
 """
 
 from flask_sqlalchemy import SQLAlchemy
-import datetime
+from datetime import datetime
 
 db = SQLAlchemy()
 
@@ -38,24 +38,26 @@ class Logo(BaseModel, db.Model):
     """Model for the logos table"""
     __tablename__ = 'logos'
 
-    charity_id = db.Column(db.Integer, primary_key = True)
+    name = db.Column(db.String, primary_key = True)
     has_face = db.Column(db.Boolean)
     logo_url = db.Column(db.String)
+    load_dte = db.Column(db.Datetime)
 
     
 class Charity(BaseModel, db.Model):
     """Model for the charity table"""
     __tablename__ = 'charity'
 
-    charity_id = db.Column(db.String, primary_key = True)
-    name = db.Column(db.String)
+    name = db.Column(db.String, primary_key = True)
     category = db.Column(db.String)
     donation_options = db.Column(db.String)
+    load_dte = db.Column(db.Datetime)
     
     
 class Description(BaseModel, db.Model):
     """Model for the description table"""
     __tablename__ = 'description'
 
-    charity_id = db.Column(db.String, primary_key = True)
+    name = db.Column(db.String, primary_key = True)
     description = db.Column(db.String)
+    load_dte = db.Column(db.Datetime)
