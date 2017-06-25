@@ -10,6 +10,7 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 import pandas as pd
 from sqlalchemy import Table, MetaData, bindparam, create_engine
+import json
 import os
 
 source_url = 'https://api.likecharity.com/charities/'
@@ -57,6 +58,8 @@ def update_charities(conn):
                     print('Bad key value splitting')
                     raise(Exception)
                 payload['donation_options'][key[0]] = key[1]
+                
+            payload['donation_options'] = json.dumps(payload['donation_options'])
                 
             payloads.append(payload)
             
