@@ -100,23 +100,6 @@ def get_descriptions(session):
     .outerjoin(Description, Charity.name == Description.name)\
     .filter(Description.name == None) # left outer join
     
-    n = 0
-    for charity in charities:
-        n = n +1
-    
-    print(n)
-    
-    charities = session.query(Charity.name)\
-    .outerjoin(Description, Charity.name == Description.name)
-    
-    n = 0
-    for charity in charities:
-        n = n +1
-    
-    print(n)
-
-    return 0
-    
     cx, key = get_google_api_key()
 
     payloads = []
