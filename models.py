@@ -41,7 +41,7 @@ class Logo(BaseModel, db.Model):
     name = db.Column(db.String, primary_key = True)
     has_face = db.Column(db.Boolean)
     logo_url = db.Column(db.String)
-    load_dte = db.Column(db.Datetime)
+    load_dte = db.Column(db.DateTime)
 
     
 class Charity(BaseModel, db.Model):
@@ -60,4 +60,4 @@ class Description(BaseModel, db.Model):
 
     name = db.Column(db.String, primary_key = True)
     description = db.Column(db.String)
-    load_dte = db.Column(db.Datetime)
+    load_dte = db.Column(db.DateTime)
