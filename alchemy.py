@@ -96,7 +96,7 @@ def get_descriptions(conn):
     
     metadata = MetaData(conn)
     charity = Table('charity', metadata, autoload=True)
-    charities = charity.query(Charity.name)\
+    charities = Table.query(Charity.name)\
     .outerjoin(Description, Charity.name == Description.name)
     
     cx, key = get_google_api_key()
