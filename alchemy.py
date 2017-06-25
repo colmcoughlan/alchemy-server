@@ -9,13 +9,29 @@ import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
 import pandas as pd
-from sqlalchemy import Table, MetaData, bindparam, create_engine
+from sqlalchemy import Table, MetaData, create_engine
+from configparser import ConfigParser
 import json
 import os
+
+from models import Charity, Logo ,Description
 
 source_url = 'https://api.likecharity.com/charities/'
 source_country = 'Ireland'
 source_number = '50300'
+
+def get_google_api_key(config_file = '../etc/alchemy-keys/google-api-keys.ini'):
+    parser = ConfigParser()
+    retval = parser.read(config_file)
+    if len(retval) != 1:
+            print('Error: could not find '+config_file)
+            raise FileNotFoundError
+    
+    cx = parser['google_api_keys']['cx']
+    key = parser['google_api_keys']['key']
+
+    return cx, key
+
 
 def update_charities(conn):
 
@@ -65,9 +81,7 @@ def update_charities(conn):
             
     charities = pd.DataFrame(payloads)
     
-    metadata = MetaData(conn)
-    charity = Table('charity', metadata, autoload=True)
-    stmt = charity.delete()
+    stmt = Charity.delete()
     stmt.execute()
     
     # add new ones, replacing old ones
@@ -75,6 +89,29 @@ def update_charities(conn):
     charities.to_sql(name='charity', con=conn, if_exists = 'append', index=False)
     
     return 0
+
+def get_descriptions(conn):
+    
+    charities = conn.query(Charity.name)\
+    .outerjoin(Description, Charity.name == Description.name)
+    
+    cx, key = get_google_api_key()
+
+    payloads = []
+    for charity in charities:
+        try:
+            r = requests.get('https://www.googleapis.com/customsearch/v1?q='+charity.name+' charity ireland&cx='+cx+'&key='+key+'M&num=1')
+            payloads.append({'name':charity.name, 'description':r.json()['items'][0]['snippet']})
+            break
+        except KeyError:
+            break    # must be out of quota, no point in trying for more
+
+    if len(payloads) > 0:
+        charities = pd.DataFrame(payloads)
+        charities['load_time'] = datetime.utcnow()
+        charities.to_sql(name='description', con=conn, if_exists = 'append', index=False)
+
+    return len(payloads)
         
 if __name__ == "__main__":
     
@@ -82,6 +119,7 @@ if __name__ == "__main__":
     conn = db.connect()
     
     update_charities(conn)
+    get_descriptions(conn)
     
     conn.close()
     db.dispose()
