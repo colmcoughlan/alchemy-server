@@ -47,7 +47,7 @@ def update_charities(conn):
         for charity, charity_key_value in zip(charities, charities_key_value):
             payload = {}
             payload['name'] = ''.join(charity.findAll(text=True))
-            payload['donation_list'] = {}
+            payload['donation_options'] = {}
             payload['category'] = category
             payload['number'] = source_number
             payload['country'] = source_country
@@ -56,7 +56,7 @@ def update_charities(conn):
                 if len(key) != 2:
                     print('Bad key value splitting')
                     raise(Exception)
-                payload['donation_list'][key[0]] = key[1]
+                payload['donation_options'][key[0]] = key[1]
                 
             payloads.append(payload)
             
@@ -70,8 +70,8 @@ def update_charities(conn):
     # update existing tables
     query = charity.update().\
                           where(charity.c.name == bindparam('name')).\
-                          values(donation_list=bindparam('donation_list'), category=bindparam('category'))
-    conn.execute(query, [saved_charities['name', 'donation_list', 'category'].to_dict()])
+                          values(donation_options=bindparam('donation_options'), category=bindparam('category'))
+    conn.execute(query, [charities[['name', 'donation_options', 'category']].to_dict()])
     
     # add new ones
     charities = charities[-charities['name'].isin(saved_charities['name'])]
