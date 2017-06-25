@@ -67,13 +67,7 @@ def update_charities(conn):
     metadata = MetaData(conn)
     charity = Table('charity', metadata, autoload=True)
     
-    # update existing tables
-    query = charity.update().\
-                          where(charity.c.name == bindparam('name')).\
-                          values(donation_options=bindparam('donation_options'), category=bindparam('category'))
-    conn.execute(query, [charities[['name', 'donation_options', 'category']].to_dict()])
-    
-    # add new ones
+    # add new ones, replacing old ones
     charities = charities[-charities['name'].isin(saved_charities['name'])]
     charities['load_time'] = datetime.utcnow()
     charities.to_sql(name='charity', con=conn, if_exists = 'append', index=False)
