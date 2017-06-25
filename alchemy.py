@@ -67,7 +67,8 @@ def update_charities(conn):
     
     metadata = MetaData(conn)
     charity = Table('charity', metadata, autoload=True)
-    charity.delete()
+    stmt = charity.delete()
+    stmt.execute()
     
     # add new ones, replacing old ones
     charities['load_time'] = datetime.utcnow()
