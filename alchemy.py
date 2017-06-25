@@ -34,7 +34,7 @@ def get_google_api_key(config_file = '../etc/alchemy-keys/google-api-keys.ini'):
     return cx, key
 
 
-def update_charities(conn):
+def update_charities(session):
 
     r = requests.get(source_url)
     
@@ -91,11 +91,9 @@ def update_charities(conn):
     
     return 0
 
-def get_descriptions(conn):
+def get_descriptions(session):
     
-    metadata = MetaData(conn)
-    charity = Table('charity', metadata, autoload=True)
-    charities = charity.query(Charity.name)\
+    charities = session.query(Charity.name)\
     .outerjoin(Description, Charity.name == Description.name)
     
     cx, key = get_google_api_key()
@@ -112,7 +110,7 @@ def get_descriptions(conn):
     if len(payloads) > 0:
         charities = pd.DataFrame(payloads)
         charities['load_time'] = datetime.utcnow()
-        charities.to_sql(name='description', con=conn, if_exists = 'append', index=False)
+        charities.to_sql(name='description', con=session.bind, if_exists = 'append', index=False)
 
     return len(payloads)
         
