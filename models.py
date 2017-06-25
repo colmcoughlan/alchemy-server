@@ -51,7 +51,7 @@ class Charity(BaseModel, db.Model):
     name = db.Column(db.String, primary_key = True)
     category = db.Column(db.String)
     donation_options = db.Column(db.String)
-    load_dte = db.Column(db.Datetime)
+    load_dte = db.Column(db.DateTime)
     
     
 class Description(BaseModel, db.Model):
