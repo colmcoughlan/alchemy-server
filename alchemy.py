@@ -9,7 +9,7 @@ import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
 import pandas as pd
-from flask_sqlalchemy.SQLAlchemy import Table, MetaData, bindparam, create_engine
+from sqlalchemy import Table, MetaData, bindparam, create_engine
 import os
 
 source_url = 'https://api.likecharity.com/charities/'
