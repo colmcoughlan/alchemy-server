@@ -64,11 +64,11 @@ def update_charities(conn):
     query = 'SELECT * FROM CHARITY'
     saved_charities = pd.read_sql_query(query, conn)
     
-    metadata = MetaData(conn)
-    charity = Table('charity', metadata, autoload=True)
+    #metadata = MetaData(conn)
+    #charity = Table('charity', metadata, autoload=True)
     
     # add new ones, replacing old ones
-    charities = charities[-charities['name'].isin(saved_charities['name'])]
+    #charities = charities[-charities['name'].isin(saved_charities['name'])]
     charities['load_time'] = datetime.utcnow()
     charities.to_sql(name='charity', con=conn, if_exists = 'append', index=False)
         
