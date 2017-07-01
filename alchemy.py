@@ -159,7 +159,7 @@ if __name__ == "__main__":
     
     update_charities(session)
     get_descriptions(session)
-    #get_logos(session, faceCascade)
+    get_logos(session, faceCascade)
     
     session.close()
     db.dispose()
