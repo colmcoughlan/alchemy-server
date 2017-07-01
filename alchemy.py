@@ -68,20 +68,21 @@ def update_charities(session):
         for charity, charity_key_value in zip(charities, charities_key_value):
             payload = {}
             name = ''.join(charity.findAll(text=True))
-            payload['donation_options'] = {}
             payload['category'] = category
-            payload['number'] = source_number
-            payload['country'] = source_country
-            for entry in charity_key_value.findAll(text=True):
-                key = entry.split(' - ')
-                if len(key) != 2:
-                    print('Bad key value splitting')
-                    raise(Exception)
-                payload['donation_options'][key[0]] = key[1]
+
             
             if name in payloads:
-                payloads[name]['donation_options'] = json.dumps(json.loads(payloads[name]['donation_options']) + payload['donation_options'])
+                payloads[name]['category'] = payloads[name]['category'] + ',' + payload['category']
             else:
+                payload['donation_options'] = {}
+                payload['number'] = source_number
+                payload['country'] = source_country
+                for entry in charity_key_value.findAll(text=True):
+                    key = entry.split(' - ')
+                    if len(key) != 2:
+                        print('Bad key value splitting')
+                        raise(Exception)
+                    payload['donation_options'][key[0]] = key[1]
                 payload['donation_options'] = json.dumps(payload['donation_options'])
                 payloads[name] = payload
             
