@@ -51,7 +51,7 @@ def update_charities(session):
         if 'Choose Category' != cat_name:
             categories.append(cat_name)
     
-    payloads = []
+    payloads = {}
     for category in categories:
         
         print('Working on '+category)
@@ -67,7 +67,7 @@ def update_charities(session):
         # get the info for the charities
         for charity, charity_key_value in zip(charities, charities_key_value):
             payload = {}
-            payload['name'] = ''.join(charity.findAll(text=True))
+            name = ''.join(charity.findAll(text=True))
             payload['donation_options'] = {}
             payload['category'] = category
             payload['number'] = source_number
@@ -78,10 +78,12 @@ def update_charities(session):
                     print('Bad key value splitting')
                     raise(Exception)
                 payload['donation_options'][key[0]] = key[1]
-                
-            payload['donation_options'] = json.dumps(payload['donation_options'])
-                
-            payloads.append(payload)
+            
+            if name in payloads:
+                payloads[name]['donation_options'] = json.dumps(json.loads(payloads[name]['donation_options']) + payload['donation_options'])
+            else:
+                payload['donation_options'] = json.dumps(payload['donation_options'])
+                payloads[name] = payload
             
     charities = pd.DataFrame(payloads)
     
