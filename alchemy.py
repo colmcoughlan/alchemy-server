@@ -86,14 +86,15 @@ def update_charities(session):
                 payload['donation_options'] = json.dumps(payload['donation_options'])
                 payloads[name] = payload
             
-    charities = pd.DataFrame(payloads)
+    charities = pd.DataFrame.from_dict(payloads, orient='index')
+    print(charities.head())
     
     session.query(Charity).delete()
     session.commit()
     
     # add new ones, replacing old ones
     charities['load_time'] = datetime.utcnow()
-    charities.to_sql(name='charity', con=session.bind, if_exists = 'append', index=False)
+    charities.to_sql(name='charity', con=session.bind, if_exists = 'append', index_label = 'name')
     
     return 0
 
