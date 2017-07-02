@@ -87,7 +87,6 @@ def update_charities(session):
                 payloads[name] = payload
             
     charities = pd.DataFrame.from_dict(payloads, orient='index')
-    print(charities.head())
     
     session.query(Charity).delete()
     session.commit()

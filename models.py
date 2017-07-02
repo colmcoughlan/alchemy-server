@@ -38,7 +38,7 @@ class Logo(BaseModel, db.Model):
     """Model for the logos table"""
     __tablename__ = 'logos'
 
-    name = db.Column(db.String, db.ForeignKey("charity.name"), nullable=False, primary_key = True, unique=True)
+    name = db.Column(db.String, nullable=False, primary_key = True, unique=True)
     has_face = db.Column(db.Boolean)
     logo_url = db.Column(db.String)
     load_time = db.Column(db.DateTime)
@@ -60,6 +60,6 @@ class Description(BaseModel, db.Model):
     """Model for the description table"""
     __tablename__ = 'description'
 
-    name = db.Column(db.String, db.ForeignKey("charity.name"), nullable=False, primary_key = True)
+    name = db.Column(db.String, nullable=False, primary_key = True)
     description = db.Column(db.String)
     load_time = db.Column(db.DateTime)
