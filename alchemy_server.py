@@ -16,6 +16,9 @@ import pandas as pd
 app = Flask(__name__)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['SQLALCHEMY_DATABASE_URI']
+db = create_engine(os.environ['SQLALCHEMY_DATABASE_URI'])
+Session = sessionmaker(bind=db)
+session = Session()
 
 
 
@@ -39,9 +42,5 @@ def gci():
     return jsonify(payload)
 
 if __name__ == "__main__":
-
-    db = create_engine(os.environ['SQLALCHEMY_DATABASE_URI'])
-    Session = sessionmaker(bind=db)
-    session = Session()
 
     app.run(host='0.0.0.0')
