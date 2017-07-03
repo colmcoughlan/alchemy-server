@@ -22,17 +22,20 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['SQLALCHEMY_DATABASE_URI']
 @app.route("/gci")
 def gci():
     global session
-    
-    query = session.query(Charity)\
-    .leftjoin(Logo, Charity.name == Logo.name)\
-    .leftjoin(Description, Charity.name == Description.name)
-    
-    charities = pd.read_sql(query.statment, session.bind)
-    
+
+    query = session.query(Charity, Description.description, Logo.logo_url, Logo.has_face)\
+    .join(Logo, Charity.name == Logo.name)\
+    .join(Description, Charity.name == Description.name)
+
+    charities = pd.read_sql(query.statement, con=session.bind, index_col = 'name')
+    charities = charities[charities['has_face'] == False]
+    charities.drop('has_face', axis=1)
+
     query = session.query(Charity.category).distinct()
-    categories = pd.read_sql(query.statment, session.bind)
-    
-    payload = {'categories':categories.values(), 'charities':charities.to_dict('index')}
+    categories = pd.read_sql(query.statement, con = session.bind)
+    categories = categories[~categories['category'].str.contains(',')]
+
+    payload = {'categories':categories.values.tolist(), 'charities':charities.to_dict('index')}
     return jsonify(payload)
 
 if __name__ == "__main__":
@@ -40,6 +43,5 @@ if __name__ == "__main__":
     db = create_engine(os.environ['SQLALCHEMY_DATABASE_URI'])
     Session = sessionmaker(bind=db)
     session = Session()
-    
+
     app.run(host='0.0.0.0')
-    print('test')
