@@ -6,7 +6,7 @@ Created on Sun Apr 30 01:14:12 2017
 @author: colm
 """
 
-from charity_server import app
+from alchemy_server import app
 
 if __name__ == "__main__":
     app.run()
