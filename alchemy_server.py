@@ -26,13 +26,13 @@ session = Session()
 def gci():
     global session
 
-    query = session.query(Charity, Description.description, Logo.logo_url, Logo.has_face)\
+    query = session.query(Charity.name, Charity.category, Charity.number, Charity.donation_options, Description.description, Logo.logo_url, Logo.has_face)\
     .join(Logo, Charity.name == Logo.name)\
     .join(Description, Charity.name == Description.name)
 
     charities = pd.read_sql(query.statement, con=session.bind, index_col = 'name')
     charities = charities[charities['has_face'] == False]
-    charities.drop('has_face', axis=1)
+    charities.drop('has_face', axis=1, inplace=True)
 
     query = session.query(Charity.category).distinct()
     categories = pd.read_sql(query.statement, con = session.bind)
