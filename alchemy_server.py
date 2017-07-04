@@ -31,7 +31,7 @@ def gci():
     .join(Description, Charity.name == Description.name)
 
     charities = pd.read_sql(query.statement, con=session.bind, index_col = 'name')
-    charities = charities[charities['has_face'] == False]
+    charities.loc[charities['has_face'] == False, 'logo_url'] = '' # set logos of charities that appear to have faces to an emtpy string
     charities.drop('has_face', axis=1, inplace=True)
 
     query = session.query(Charity.category).distinct()
