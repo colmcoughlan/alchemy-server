@@ -59,6 +59,7 @@ def update_charities(session):
             charities[keyword['CharityName']]['donation_options'][keyword['Keyword']]  = '€'+str(int(float(keyword['Amount'])/100.0))
             
     charities = pd.DataFrame.from_dict(charities, orient='index')
+    charities['donation_options'] = json.dumps(charities['donation_options'].values.tolist())
     charities['number'] = source_number
     charities['country'] = source_country
     charities['load_time'] = datetime.utcnow()
