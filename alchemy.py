@@ -6,7 +6,6 @@ Created on Sun Jun 25 17:56:25 2017
 """
 
 import requests
-from bs4 import BeautifulSoup
 from datetime import datetime
 import pandas as pd
 from sqlalchemy import create_engine
@@ -20,11 +19,15 @@ import cv2
 from models import Charity, Logo, Description
 from logo_check import check_for_faces
 
-source_url = 'https://api.likecharity.com/charities/'
+source_url = 'https://api.likecharity.com/charities/?json'
 source_country = 'Ireland'
 source_number = '50300'
 
+
 def get_google_api_key(config_file = '../etc/alchemy-keys/google-api-keys.ini'):
+    '''
+    Get the google API key from local storage
+    '''
     parser = ConfigParser()
     retval = parser.read(config_file)
     if len(retval) != 1:
@@ -38,67 +41,42 @@ def get_google_api_key(config_file = '../etc/alchemy-keys/google-api-keys.ini'):
 
 
 def update_charities(session):
+    '''
+    Use the LIKECHARITY API to get charity donation options as json, parse them into a pandas DF and replace existing SQL table
+    Note the json comes as a list of 1 entry per keyword, NOT per charity
+    '''
 
-    r = requests.get(source_url)
+    r = requests.post(source_url)
+    charities = {}
     
-    soup = BeautifulSoup(r.text, "lxml")
-    
-    categories_soup = soup.findAll("div", { "class" : "filter--categories" })
-    categories_soup = categories_soup[0].findAll("option")
-    categories = []
-    for category in categories_soup:
-        cat_name = category.findAll(text=True)[0]
-        if 'Choose Category' != cat_name:
-            categories.append(cat_name)
-    
-    payloads = {}
-    for category in categories:
-        
-        print('Working on '+category)
-        
-        r = requests.post(source_url, data = {'category_name':category})
-    
-        soup = BeautifulSoup(r.text, "lxml")
-    
-        charities = soup.findAll("h3", { "class" : "charity" })
-        charities_key_value = soup.findAll("div", { "class" : "keywords" })
-        
-        
-        # get the info for the charities
-        for charity, charity_key_value in zip(charities, charities_key_value):
+    for keyword in r.json():
+        if keyword['CharityName'] not in charities:
             payload = {}
-            name = ''.join(charity.findAll(text=True))
-            payload['category'] = category
-
+            payload['category'] = keyword['Category']
+            payload['donation_options'] = {keyword['Keyword']:'€'+str(int(float(keyword['Amount'])/100.0))}
+            charities[keyword['CharityName']] = payload
+        else:
+            charities[keyword['CharityName']]['donation_options'][keyword['Keyword']]  = '€'+str(int(float(keyword['Amount'])/100.0))
             
-            if name in payloads:
-                payloads[name]['category'] = payloads[name]['category'] + ',' + payload['category']
-            else:
-                payload['donation_options'] = {}
-                payload['number'] = source_number
-                payload['country'] = source_country
-                for entry in charity_key_value.findAll(text=True):
-                    key = entry.split(' - ')
-                    if len(key) != 2:
-                        print('Bad key value splitting')
-                        raise(Exception)
-                    payload['donation_options'][key[0]] = key[1]
-                payload['donation_options'] = json.dumps(payload['donation_options'])
-                payloads[name] = payload
-            
-    charities = pd.DataFrame.from_dict(payloads, orient='index')
-    
+    charities = pd.DataFrame.from_dict(charities, orient='index')
+    charities['number'] = source_number
+    charities['country'] = source_country
+    charities['load_time'] = datetime.utcnow()
+                
     session.query(Charity).delete()
     session.commit()
     
     # add new ones, replacing old ones
-    charities['load_time'] = datetime.utcnow()
     charities.to_sql(name='charity', con=session.bind, if_exists = 'append', index_label = 'name')
     
     return 0
 
 def get_descriptions(session):
-    
+    '''
+    Identify charities without descriptions.
+    Use google custom search API to find descriptions for them
+    Update SQL with new description
+    '''
     charities = session.query(Charity.name)\
     .outerjoin(Description, Charity.name == Description.name)\
     .filter(Description.name == None) # left outer join
@@ -122,7 +100,12 @@ def get_descriptions(session):
     return len(payloads)
 
 def get_logos(session, faceCascade):
-    
+    '''
+    Identify charities without images.
+    Use google custom search API to find descriptions for them
+    Check to see if there is a face in the image (will not actually be used if true)
+    Update SQL with new image and boolean has_face
+    '''
     charities = session.query(Charity.name)\
     .outerjoin(Logo, Charity.name == Logo.name)\
     .filter(Logo.name == None) # left outer join
