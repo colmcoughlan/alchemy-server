@@ -53,13 +53,14 @@ def update_charities(session):
         if keyword['CharityName'] not in charities:
             payload = {}
             payload['category'] = keyword['Category']
-            payload['donation_options'] = {keyword['Keyword']:'€'+str(int(float(keyword['Amount'])/100.0))}
+            payload['donation_options'] = json.dumps({keyword['Keyword']:'€'+str(int(float(keyword['Amount'])/100.0))})
             charities[keyword['CharityName']] = payload
         else:
-            charities[keyword['CharityName']]['donation_options'][keyword['Keyword']]  = '€'+str(int(float(keyword['Amount'])/100.0))
+            donation_options_dict = json.loads(charities[keyword['CharityName']]['donation_options'])
+            donation_options_dict[keyword['Keyword']]  = '€'+str(int(float(keyword['Amount'])/100.0))
+            charities[keyword['CharityName']]['donation_options'] = json.dumps(donation_options_dict)
             
     charities = pd.DataFrame.from_dict(charities, orient='index')
-    charities['donation_options'] = json.dumps(charities['donation_options'].values.tolist())
     charities['number'] = source_number
     charities['country'] = source_country
     charities['load_time'] = datetime.utcnow()
