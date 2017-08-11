@@ -26,7 +26,7 @@ session = Session()
 def gci():
     global session
 
-    query = session.query(Charity.name, Charity.category, Charity.number, Charity.donation_options, Description.description, Logo.logo_url, Logo.has_face)\
+    query = session.query(Charity.name, Charity.category, Charity.number, Charity.donation_options, Charity.freq, Description.description, Logo.logo_url, Logo.has_face)\
     .join(Logo, Charity.name == Logo.name)\
     .join(Description, Charity.name == Description.name)
 
