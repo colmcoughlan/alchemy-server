@@ -53,6 +53,7 @@ class Charity(BaseModel, db.Model):
     country = db.Column(db.String)
     number = db.Column(db.Integer)
     donation_options = db.Column(db.String)
+    freq = db.Column(db.String)
     load_time = db.Column(db.DateTime)
     
     

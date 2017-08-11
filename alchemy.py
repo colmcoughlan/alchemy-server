@@ -19,7 +19,7 @@ import cv2
 from models import Charity, Logo, Description
 from logo_check import check_for_faces
 
-source_url = 'https://api.likecharity.com/charities/?json'
+source_url = 'https://api.likecharity.com/charities/?json&version=2'
 source_country = 'Ireland'
 source_number = '50300'
 
@@ -53,12 +53,17 @@ def update_charities(session):
         if keyword['CharityName'] not in charities:
             payload = {}
             payload['category'] = keyword['Category']
+            payload['freq'] = json.dumps({keyword['Keyword']:keyword['RecurUnit']})
             payload['donation_options'] = json.dumps({keyword['Keyword']:'€'+str(int(float(keyword['Amount'])/100.0))})
             charities[keyword['CharityName']] = payload
         else:
-            donation_options_dict = json.loads(charities[keyword['CharityName']]['donation_options'])
-            donation_options_dict[keyword['Keyword']]  = '€'+str(int(float(keyword['Amount'])/100.0))
-            charities[keyword['CharityName']]['donation_options'] = json.dumps(donation_options_dict)
+            temp_dict = json.loads(charities[keyword['CharityName']]['freq'])
+            temp_dict[keyword['Keyword']]  = keyword['RecurUnit']
+            charities[keyword['CharityName']]['freq'] = json.dumps(temp_dict)
+            
+            temp_dict = json.loads(charities[keyword['CharityName']]['donation_options'])
+            temp_dict[keyword['Keyword']]  = '€'+str(int(float(keyword['Amount'])/100.0))
+            charities[keyword['CharityName']]['donation_options'] = json.dumps(temp_dict)
             
     charities = pd.DataFrame.from_dict(charities, orient='index')
     charities['number'] = source_number
